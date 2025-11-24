@@ -1,0 +1,34 @@
+{
+  "employees": [
+    { "id": 1, "fullName": "Иванов Иван Иванович" },
+    { "id": 2, "fullName": "Петрова Анна Сергеевна" }
+  ],
+  "books": [
+    {
+      "id": 101,
+      "title": "Война и мир",
+      "author": "Л. Н. Толстой",
+      "image": "/images/war_and_peace.jpg"
+    },
+    {
+      "id": 102,
+      "title": "Мастер и Маргарита",
+      "author": "М. Булгаков",
+      "image": "/images/master_margarita.jpg"
+    }
+  ],
+  "issueRecords": [
+    {
+      "bookId": 101,
+      "employeeId": 1,
+      "issueDate": 1732400000,
+      "returnDate": null
+    },
+    {
+      "bookId": 102,
+      "employeeId": 2,
+      "issueDate": 1730000000,
+      "returnDate": 1731000000
+    }
+  ]
+}
