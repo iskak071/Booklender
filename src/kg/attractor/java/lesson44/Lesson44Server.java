@@ -31,7 +31,7 @@ public class Lesson44Server extends BasicServer {
         super(host, port);
         registerGet("/books", this::bookListHandler);
         registerGet("/book/\\d+", this::bookDetailsHandler);
-        registerGet("/employee/\\d+", this::employeeDetailsHandler);
+        registerGet("/employee/\\d+", this::employeeDetailsHandler); //  заготовка на будщее
 
         registerGet("/css/.*", this::fileHandler);
         registerGet("/images/.*", this::fileHandler);
