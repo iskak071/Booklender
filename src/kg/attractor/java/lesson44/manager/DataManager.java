@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DataManager {
     private static final String DATA_FILE_PATH = "data/data.json";
@@ -41,12 +42,6 @@ public class DataManager {
     public List<Book> getAllBooks() {
         return data.getBooks();
     }
-    public List<Employee> getAllEmployees() {
-        return data.getEmployees();
-    }
-    public List<IssueRecord> getAllIssueRecords() {
-        return data.getIssueRecords();
-    }
 
     public Optional<Book> getBookById(int id) {
         return data.getBooks().stream().filter(b -> b.getId() == id).findFirst();
@@ -61,5 +56,11 @@ public class DataManager {
                 .findFirst();
 
         return activeRecord.flatMap(record -> getEmployeeById(record.getEmployeeId()));
+    }
+
+    public List<IssueRecord> getRecordsForEmployee(int employeeId) {
+        return data.getIssueRecords().stream()
+                .filter(r -> r.getEmployeeId() == employeeId)
+                .collect(Collectors.toList());
     }
 }
