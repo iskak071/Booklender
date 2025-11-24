@@ -1,0 +1,26 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+classes/
+
+# Maven
+target/
+
+# Gradle
+.gradle/
+build/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+
+# Temporary files
+*.tmp
+*.temp
