@@ -111,6 +111,17 @@ public abstract class BasicServer {
         }
     }
 
+    protected void sendTextData(HttpExchange exchange, ResponseCodes responseCode,
+                                ContentType contentType, String data) {
+        try {
+            byte[] bytes = data.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+            sendByteData(exchange, responseCode, contentType, bytes);
+        } catch (java.io.IOException e) {
+            System.out.println("Error sending text data: " + e.getMessage());
+        }
+    }
+
     private void respond404(HttpExchange exchange) {
         try {
             var data = "404 Not found".getBytes();
