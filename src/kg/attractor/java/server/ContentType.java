@@ -10,7 +10,23 @@ public enum ContentType {
     private final String descr;
 
     ContentType(String descr) {
-        this.descr =  descr;
+        this.descr = descr;
+    }
+
+    public static ContentType fromFileName(String fileName) {
+        if (fileName.endsWith(".css")) {
+            return TEXT_CSS;
+        }
+        if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
+            return TEXT_HTML;
+        }
+        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return IMAGE_JPEG;
+        }
+        if (fileName.endsWith(".png")) {
+            return IMAGE_PNG;
+        }
+        return TEXT_PLAIN;
     }
 
     @Override
@@ -18,3 +34,4 @@ public enum ContentType {
         return descr;
     }
 }
+

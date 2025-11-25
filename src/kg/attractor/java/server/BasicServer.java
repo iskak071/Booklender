@@ -111,6 +111,17 @@ public abstract class BasicServer {
         }
     }
 
+    protected void sendTextData(HttpExchange exchange, ResponseCodes responseCode,
+                                ContentType contentType, String data) {
+        try {
+            byte[] bytes = data.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+            sendByteData(exchange, responseCode, contentType, bytes);
+        } catch (java.io.IOException e) {
+            System.out.println("Error sending text data: " + e.getMessage());
+        }
+    }
+
     private void respond404(HttpExchange exchange) {
         try {
             var data = "404 Not found".getBytes();
@@ -121,7 +132,29 @@ public abstract class BasicServer {
     }
 
     private void handleIncomingServerRequests(HttpExchange exchange) {
-        var route = getRoutes().getOrDefault(makeKey(exchange), this::respond404);
+        var route = getRoutes().get(makeKey(exchange));
+
+        if (route == null) {
+            String method = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
+
+            for (Map.Entry<String, RouteHandler> entry : getRoutes().entrySet()) {
+                String key = entry.getKey();
+
+                if (key.startsWith(method + " ")) {
+                    String routePattern = key.substring(method.length() + 1);
+                    if (path.matches(routePattern)) {
+                        route = entry.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (route == null) {
+            route = this::respond404;
+        }
+
         route.handle(exchange);
     }
 
