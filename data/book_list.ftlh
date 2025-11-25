@@ -14,7 +14,7 @@
 
         <#list books as book>
         <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card h-100 border border-primary p-3">
+            <div class="card h-100 shadow-lg p-3">
 
                 <img src="${book.image}" class="card-img-top" alt="Обложка книги ${book.title}"
                      style="height: 250px; object-fit: cover;">

@@ -132,7 +132,29 @@ public abstract class BasicServer {
     }
 
     private void handleIncomingServerRequests(HttpExchange exchange) {
-        var route = getRoutes().getOrDefault(makeKey(exchange), this::respond404);
+        var route = getRoutes().get(makeKey(exchange));
+
+        if (route == null) {
+            String method = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
+
+            for (Map.Entry<String, RouteHandler> entry : getRoutes().entrySet()) {
+                String key = entry.getKey();
+
+                if (key.startsWith(method + " ")) {
+                    String routePattern = key.substring(method.length() + 1);
+                    if (path.matches(routePattern)) {
+                        route = entry.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (route == null) {
+            route = this::respond404;
+        }
+
         route.handle(exchange);
     }
 

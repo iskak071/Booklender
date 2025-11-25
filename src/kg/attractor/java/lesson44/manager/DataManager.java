@@ -43,6 +43,10 @@ public class DataManager {
         return data.getBooks();
     }
 
+    public List<Employee> getAllEmployees() {
+        return data.getEmployees();
+    }
+
     public Optional<Book> getBookById(int id) {
         return data.getBooks().stream().filter(b -> b.getId() == id).findFirst();
     }

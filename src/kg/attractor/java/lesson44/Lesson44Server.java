@@ -99,32 +99,44 @@ public class Lesson44Server extends BasicServer {
             );
         }
 
-       Map<String, Object> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("books", books);
 
         renderTemplate(exchange, "book_list.ftlh", data);
     }
 
     private void bookDetailsHandler(HttpExchange exchange) {
-        String path = exchange.getRequestURI().getPath();
-        int bookId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
+        try {
+            String path = exchange.getRequestURI().getPath();
+            int bookId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
 
-        Book book = dataManager.getBookById(bookId).orElse(null);
+            Book book = dataManager.getBookById(bookId).orElse(null);
+            if (book == null) {
+                sendTextData(exchange, ResponseCodes.NOT_FOUND, ContentType.TEXT_PLAIN, "Book not found.");
+                return;
+            }
 
-        if (book == null) {
-            sendTextData(exchange, ResponseCodes.NOT_FOUND, ContentType.TEXT_PLAIN, "Book not found.");
-            return;
+            Employee holder = dataManager.findCurrentHolder(book).orElse(null);
+            if (holder != null) {
+                book.setCurrentHolder(holder.getFullName());
+            } else {
+                book.setCurrentHolder("Available");
+            }
+
+            List<Employee> allEmployees = dataManager.getAllEmployees();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("book", book);
+            data.put("employees", allEmployees);
+            data.put("holder", holder);
+
+            renderTemplate(exchange, "book_details.ftlh", data);
+        } catch (NumberFormatException e) {
+            sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Invalid book ID.");
+        } catch (Exception e) {
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
         }
 
-        dataManager.findCurrentHolder(book).ifPresentOrElse(
-                holder -> book.setCurrentHolder(holder.getFullName()),
-                () -> book.setCurrentHolder("Available")
-        );
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("book", book);
-
-        renderTemplate(exchange, "book_details.ftlh", data);
     }
 
     private void employeeDetailsHandler(HttpExchange exchange) {
