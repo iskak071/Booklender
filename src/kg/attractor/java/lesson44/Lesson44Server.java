@@ -32,9 +32,15 @@ public class Lesson44Server extends BasicServer {
         registerGet("/books", this::bookListHandler);
         registerGet("/book/\\d+", this::bookDetailsHandler);
         registerGet("/employee/\\d+", this::employeeDetailsHandler);
+//        registerGet("/register", this::registerGetHandler);
+//        registerGet("/login", this::loginGetHandler);
+//        registerGet("/profile", this::profileGetHandler);
 
         registerGet("/css/.*", this::fileHandler);
         registerGet("/images/.*", this::fileHandler);
+
+//        registerPost("/register", this::registerPostHandler);
+//        registerPost("/login", this::loginPostHandler);
     }
 
     private static Configuration initFreeMarker() {
