@@ -6,24 +6,38 @@
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-<body>
-    <div class="container">
-        <#if success>
-            <div class="success">
-                <h3>Регистрация успешна!</h3>
-                <p>Добро пожаловать, ${employee.fullName}!</p>
-                <p>Ваш email: ${employee.email}</p>
-                <a href="/login" class="btn btn-primary">Войти в систему</a>
-                <a href="/books" class="btn btn-secondary">Перейти к книгам</a>
-            </div>
-        <#else>
-            <div class="error">
-                <h3>Регистрация не удалась</h3>
-                <p>Пользователь с email ${email} уже существует.</p>
-                <a href="/register" class="btn btn-primary">Попробовать снова</a>
-                <a href="/login" class="btn btn-secondary">Войти в существующий аккаунт</a>
-            </div>
-        </#if>
+
+<body class="bg-light">
+    <div class="container d-flex justify-content-center">
+        <div class="col-10 col-md-6 col-lg-4 mt-5 text-center">
+
+            <h2>Результат регистрации</h2>
+
+            <#if success>
+                <div class="alert alert-success mt-3">
+                    Регистрация прошла успешно!
+                </div>
+
+                <p><strong>Добро пожаловать:</strong> ${employee.fullName}</p>
+                <p><strong>Email:</strong> ${employee.email}</p>
+
+                <br>
+                <a href="/login" class="btn btn-success w-100 mb-2">Войти в систему</a>
+                <a href="/books" class="btn btn-primary w-100">Перейти к книгам</a>
+
+            <#else>
+                <div class="alert alert-danger mt-3">
+                    Регистрация не удалась!
+                </div>
+
+                <p>Пользователь с email <strong>${email}</strong> уже существует.</p>
+
+                <br>
+                <a href="/register" class="btn btn-primary w-100 mb-2">Попробовать снова</a>
+                <a href="/login" class="btn btn-success w-100">Войти в существующий аккаунт</a>
+            </#if>
+
+        </div>
     </div>
 </body>
 </html>
