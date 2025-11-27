@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="text-center">Добро пожаловать в Booklender!</h1>
+    <h1 class="text-center">Наши книги: </h1>
 
     <div class="row d-flex justify-content-around mt-5">
 

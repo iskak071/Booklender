@@ -8,7 +8,9 @@ import kg.attractor.java.lesson44.models.Employee;
 import kg.attractor.java.lesson44.models.IssueRecord;
 
 import java.io.FileReader;
+    import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,43 @@ public class DataManager {
         }
     }
 
+    public void saveData() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        try (Writer writer = new FileWriter(DATA_FILE_PATH)) {
+            gson.toJson(data, writer);
+            System.out.println("DataManager: Data saved successfully!");
+        } catch (IOException e) {
+            System.out.println("DataManager: ERROR saving data to JSON.");
+            e.printStackTrace();
+        }
+    }
+
+    public Optional<Employee> findEmployeeByEmail(String email) {
+        return data.getEmployees().stream()
+                .filter(e -> e.getEmail() != null && e.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+    }
+
+    public boolean addEmployee(Employee employee) {
+        if (findEmployeeByEmail(employee.getEmail()).isPresent()) {
+            return false;
+        }
+
+        int maxID = data.getEmployees().stream()
+                .mapToInt(Employee::getId)
+                .max()
+                .orElse(0);
+        employee.setId(maxID + 1);
+
+        data.getEmployees().add(employee);
+
+        saveData();
+        return true;
+    }
+
+
+
     public List<Book> getAllBooks() {
         return data.getBooks();
     }
@@ -54,6 +93,7 @@ public class DataManager {
     public Optional<Employee> getEmployeeById(int id) {
         return data.getEmployees().stream().filter(e -> e.getId() == id).findFirst();
     }
+
     public Optional<Employee> findCurrentHolder(Book book) {
         Optional<IssueRecord> activeRecord = data.getIssueRecords().stream()
                 .filter(r -> r.getBookId() == book.getId() && r.isCurrentlyBorrowed())

@@ -1,7 +1,17 @@
 {
   "employees": [
-    { "id": 1, "fullName": "Иванов Иван Иванович" },
-    { "id": 2, "fullName": "Петрова Анна Сергеевна" }
+    {
+      "id": 1,
+      "fullName": "Иванов Иван Иванович",
+      "email": "ivanov@example.com",
+      "password": "12345"
+    },
+    {
+      "id": 2,
+      "fullName": "Петрова Анна Сергеевна",
+      "email": "petrova@example.com",
+      "password": "54321"
+    }
   ],
   "books": [
     {
