@@ -14,13 +14,15 @@ import kg.attractor.java.server.BasicServer;
 import kg.attractor.java.server.ContentType;
 import kg.attractor.java.server.ResponseCodes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Lesson44Server extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
@@ -32,15 +34,15 @@ public class Lesson44Server extends BasicServer {
         registerGet("/books", this::bookListHandler);
         registerGet("/book/\\d+", this::bookDetailsHandler);
         registerGet("/employee/\\d+", this::employeeDetailsHandler);
-//        registerGet("/register", this::registerGetHandler);
-//        registerGet("/login", this::loginGetHandler);
-//        registerGet("/profile", this::profileGetHandler);
+        registerGet("/register", this::registerGetHandler);
+        registerGet("/login", this::loginGetHandler);
+        registerGet("/profile", this::profileGetHandler);
 
         registerGet("/css/.*", this::fileHandler);
         registerGet("/images/.*", this::fileHandler);
 
-//        registerPost("/register", this::registerPostHandler);
-//        registerPost("/login", this::loginPostHandler);
+        registerPost("/register", this::registerPostHandler);
+        registerPost("/login", this::loginPostHandler);
     }
 
     private static Configuration initFreeMarker() {
@@ -190,5 +192,129 @@ public class Lesson44Server extends BasicServer {
         } catch (IOException e) {
             sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal Server Error.");
         }
+    }
+
+    private void registerGetHandler(HttpExchange exchange) {
+        try {
+            File file = new File("data/register.html");
+            byte[] fileBytes = java.nio.file.Files.readAllBytes(file.toPath());
+            sendByteData(exchange, ResponseCodes.OK, ContentType.TEXT_HTML, fileBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.NOT_FOUND, ContentType.TEXT_PLAIN, "Register page not found.");
+        }
+    }
+
+    private void registerPostHandler(HttpExchange exchange) {
+        try {
+            String formData = new String(exchange.getRequestBody().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            Map<String, String> params = parseFormData(formData);
+
+            String fullName = params.get("fullName");
+            String email = params.get("email");
+            String password = params.get("password");
+
+            if (fullName == null || email == null || password == null) {
+                sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "All fields are required.");
+                return;
+            }
+
+            if (dataManager.findEmployeeByEmail(email).isPresent()) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("success", false);
+                data.put("email", email);
+                renderTemplate(exchange, "register_result.ftlh", data);
+                return;
+            }
+
+            Employee newEmployee = new Employee();
+            newEmployee.setFullName(fullName);
+            newEmployee.setEmail(email);
+            newEmployee.setPassword(password);
+
+            boolean success = dataManager.addEmployee(newEmployee);
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("success", success);
+            if (success) {
+                data.put("employee", newEmployee);
+            }
+
+            renderTemplate(exchange, "register_result.ftlh", data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
+    }
+
+    private void loginGetHandler(HttpExchange exchange) {
+        try {
+            File file = new File("data/login.html");
+            byte[] fileBytes = Files.readAllBytes(file.toPath());
+            sendByteData(exchange, ResponseCodes.OK, ContentType.TEXT_HTML, fileBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.NOT_FOUND, ContentType.TEXT_PLAIN, "Login page not found.");
+        }
+    }
+
+    private void loginPostHandler(HttpExchange exchange) {
+
+        Charset utf8 = StandardCharsets.UTF_8;
+
+        try {
+            String formData = new String(exchange.getRequestBody().readAllBytes(), utf8);
+            Map<String, String> params = parseFormData(formData);
+
+            String email = params.get("email");
+            String password = params.get("password");
+
+            if (email == null || password == null) {
+                sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Email and password are required");
+                return;
+            }
+
+            Optional<Employee> employeeOpt = dataManager.findEmployeeByEmail(email);
+
+            if (employeeOpt.isPresent() && employeeOpt.get().getPassword().equals(password)) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("employee", employeeOpt.get());
+                renderTemplate(exchange, "profile.ftlh", data);
+            } else {
+                sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization failed. Invalid email or password.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
+    }
+
+    private void profileGetHandler(HttpExchange exchange) {
+        Map<String, Object> data = new HashMap<>();
+        renderTemplate(exchange, "profile.ftlh", data);
+    }
+
+    private Map<String, String> parseFormData(String formData) {
+        Map<String,String> params = new HashMap<>();
+        if (formData == null || formData.isEmpty()) {
+            return params;
+        }
+
+        String[] parts = formData.split("&");
+        for (String part:parts) {
+            String[] kv = part.split("=");
+            if (kv.length == 2) {
+                try {
+                    String key = URLDecoder.decode(kv[0], "UTF-8");
+                    String value = URLDecoder.decode(kv[1], "UTF-8");
+                    params.put(key, value);
+                } catch (UnsupportedEncodingException e) {
+
+                }
+            }
+        }
+        return params;
     }
 }

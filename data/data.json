@@ -18,21 +18,22 @@
       "id": 101,
       "title": "Война и мир",
       "author": "Л. Н. Толстой",
-      "image": "/images/war_and_peace.jpg"
+      "image": "/images/war_and_peace.jpg",
+      "currentHolder": "Иванов Иван Иванович"
     },
     {
       "id": 102,
       "title": "Мастер и Маргарита",
       "author": "М. Булгаков",
-      "image": "/images/master_margarita.jpg"
+      "image": "/images/master_margarita.jpg",
+      "currentHolder": "Available"
     }
   ],
   "issueRecords": [
     {
       "bookId": 101,
       "employeeId": 1,
-      "issueDate": 1732400000,
-      "returnDate": null
+      "issueDate": 1732400000
     },
     {
       "bookId": 102,
