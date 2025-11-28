@@ -11,6 +11,24 @@
       "fullName": "Петрова Анна Сергеевна",
       "email": "petrova@example.com",
       "password": "54321"
+    },
+    {
+      "id": 3,
+      "fullName": "test1",
+      "email": "test@test.test",
+      "password": "test"
+    },
+    {
+      "id": 4,
+      "fullName": "test2",
+      "email": "test2@test.test",
+      "password": "test"
+    },
+    {
+      "id": 5,
+      "fullName": "etste",
+      "email": "test3@test.test",
+      "password": "test"
     }
   ],
   "books": [

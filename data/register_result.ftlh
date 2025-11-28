@@ -22,7 +22,7 @@
                 <p><strong>Email:</strong> ${employee.email}</p>
 
                 <br>
-                <a href="/login" class="btn btn-success w-100 mb-2">Войти в систему</a>
+                <a href="/login" class="btn btn-danger w-100 mb-2">Выйти из аккаунта</a>
                 <a href="/books" class="btn btn-primary w-100">Перейти к книгам</a>
 
             <#else>
