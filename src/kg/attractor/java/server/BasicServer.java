@@ -48,6 +48,14 @@ public abstract class BasicServer {
         return HttpServer.create(address, 50);
     }
 
+    protected static void setCookie(HttpExchange exchange, Cookie cookie) {
+        exchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
+    }
+
+    protected static String getCookie(HttpExchange exchange) {
+        return exchange.getRequestHeaders().getOrDefault("Cookie", List.of("")).getFirst();
+    }
+
     private void registerCommonHandlers() {
         // самый основной обработчик, который будет определять
         // какие обработчики вызывать в дальнейшем
@@ -106,8 +114,7 @@ public abstract class BasicServer {
         return Path.of(dataDir, s);
     }
 
-    protected final void sendByteData(HttpExchange exchange, ResponseCodes responseCode,
-                                      ContentType contentType, byte[] data) throws IOException {
+    protected final void sendByteData(HttpExchange exchange, ResponseCodes responseCode, ContentType contentType, byte[] data) throws IOException {
         try (var output = exchange.getResponseBody()) {
             setContentType(exchange, contentType);
             exchange.sendResponseHeaders(responseCode.getCode(), 0);
@@ -116,8 +123,7 @@ public abstract class BasicServer {
         }
     }
 
-    protected void sendTextData(HttpExchange exchange, ResponseCodes responseCode,
-                                ContentType contentType, String data) {
+    protected void sendTextData(HttpExchange exchange, ResponseCodes responseCode, ContentType contentType, String data) {
         try {
             byte[] bytes = data.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
@@ -136,7 +142,7 @@ public abstract class BasicServer {
         }
     }
 
-    private void handleIncomingServerRequests(HttpExchange exchange) {
+    private void handleIncomingServerRequests(HttpExchange exchange) throws IOException {
         var route = getRoutes().get(makeKey(exchange));
 
         if (route == null) {
@@ -161,15 +167,6 @@ public abstract class BasicServer {
         }
 
         route.handle(exchange);
-    }
-
-    protected static void setCookie(HttpExchange exchange, Cookie cookie) {
-        exchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
-    }
-
-    protected static String getCookie(HttpExchange exchange) {
-        return exchange.getRequestHeaders().getOrDefault("Cookie", List.of(""))
-                .getFirst();
     }
 
     public final void start() {

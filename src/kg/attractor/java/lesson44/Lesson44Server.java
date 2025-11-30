@@ -45,6 +45,9 @@ public class Lesson44Server extends BasicServer {
 
         registerPost("/register", this::registerPostHandler);
         registerPost("/login", this::loginPostHandler);
+
+        registerPost("/borrow/\\d+", this::borrowBookHandler);
+        registerPost("/return/\\d+", this::returnBookHandler);
     }
 
     private static Configuration initFreeMarker() {
@@ -89,10 +92,7 @@ public class Lesson44Server extends BasicServer {
         List<Book> books = dataManager.getAllBooks();
 
         for (Book book : books) {
-            dataManager.findCurrentHolder(book).ifPresentOrElse(
-                    holder -> book.setCurrentHolder(holder.getFullName()),
-                    () -> book.setCurrentHolder("Available")
-            );
+            dataManager.findCurrentHolder(book).ifPresentOrElse(holder -> book.setCurrentHolder(holder.getFullName()), () -> book.setCurrentHolder("Available"));
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -360,5 +360,59 @@ public class Lesson44Server extends BasicServer {
         }
 
         return dataManager.getEmployeeById(employeeId);
+    }
+
+    private void borrowBookHandler(HttpExchange exchange) throws IOException {
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
+        if (employeeOpt.isEmpty()) {
+            sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization required.");
+            return;
+        }
+
+        try {
+            String path = exchange.getRequestURI().getPath();
+            int bookId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
+
+            boolean success = dataManager.borrowBook(bookId, employeeOpt.get().getId());
+
+            if (success) {
+                exchange.getResponseHeaders().set("Location", "/books");
+                exchange.sendResponseHeaders(302, -1);
+            } else {
+                sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Failed to issue book. Check book availability and limit(2 books)");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
+
+    }
+
+    private void returnBookHandler(HttpExchange exchange) {
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
+        if (employeeOpt.isEmpty()) {
+            sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization required.");
+            return;
+        }
+
+        try {
+            String path = exchange.getRequestURI().getPath();
+            int bookId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
+
+            boolean success = dataManager.returnBook(bookId, employeeOpt.get().getId());
+
+            if (success) {
+                exchange.getResponseHeaders().set("Location", "/books");
+                exchange.sendResponseHeaders(302, -1);
+            } else {
+                sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Failed to return book. Book not found or already returned");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
     }
 }

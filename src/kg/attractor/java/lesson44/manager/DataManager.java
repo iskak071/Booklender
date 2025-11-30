@@ -8,7 +8,7 @@ import kg.attractor.java.lesson44.models.Employee;
 import kg.attractor.java.lesson44.models.IssueRecord;
 
 import java.io.FileReader;
-    import java.io.FileWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
@@ -75,7 +75,6 @@ public class DataManager {
         saveData();
         return true;
     }
-
 
 
     public List<Book> getAllBooks() {
