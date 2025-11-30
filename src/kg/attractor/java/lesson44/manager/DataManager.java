@@ -107,4 +107,52 @@ public class DataManager {
                 .filter(r -> r.getEmployeeId() == employeeId)
                 .collect(Collectors.toList());
     }
+
+    public int getCurrentBooksCount(int employeeId) {
+        return (int) data.getIssueRecords().stream()
+                .filter(r -> r.getEmployeeId() == employeeId && r.isCurrentlyBorrowed())
+                .count();
+    }
+
+    public boolean borrowBook(int bookId, int employeeId) {
+        Optional<Book> bookOpt = getBookById(bookId);
+        if (bookOpt.isEmpty()) {
+            return false;
+        }
+
+        Optional<Employee> currentHolder = findCurrentHolder(bookOpt.get());
+        if (currentHolder.isPresent()) {
+            return false;
+        }
+
+        if (getCurrentBooksCount(employeeId) >= 2) {
+            return false;
+        }
+
+        IssueRecord record = new IssueRecord();
+        record.setBookId(bookId);
+        record.setEmployeeId(employeeId);
+        record.setIssueDate(System.currentTimeMillis());
+        record.setReturnDate(null);
+
+        data.getIssueRecords().add(record);
+        saveData();
+        return true;
+    }
+
+    public boolean returnBook(int bookId, int employeeId) {
+        Optional<IssueRecord> activeRecord = data.getIssueRecords().stream()
+                .filter(r -> r.getBookId() == bookId &&
+                        r.getEmployeeId() == employeeId &&
+                        r.isCurrentlyBorrowed())
+                .findFirst();
+
+        if (activeRecord.isEmpty()) {
+            return false;
+        }
+
+        activeRecord.get().setReturnDate(System.currentTimeMillis());
+        saveData();
+        return true;
+    }
 }
