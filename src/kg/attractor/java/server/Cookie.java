@@ -10,6 +10,7 @@ public class Cookie<V> {
     private final V value;
     private Integer maxAge;
     private boolean httpOnly;
+    private String path;
 
     public Cookie(String name, V value) {
         Objects.requireNonNull(name);
@@ -45,6 +46,11 @@ public class Cookie<V> {
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
     }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 
     @Override
     public String toString() {

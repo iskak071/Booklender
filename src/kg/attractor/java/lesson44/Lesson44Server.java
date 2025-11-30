@@ -13,6 +13,7 @@ import kg.attractor.java.lesson44.models.EmployeeRecord;
 import kg.attractor.java.lesson44.models.IssueRecord;
 import kg.attractor.java.server.BasicServer;
 import kg.attractor.java.server.ContentType;
+import kg.attractor.java.server.Cookie;
 import kg.attractor.java.server.ResponseCodes;
 
 import java.io.*;
@@ -279,6 +280,13 @@ public class Lesson44Server extends BasicServer {
             Optional<Employee> employeeOpt = dataManager.findEmployeeByEmail(email);
 
             if (employeeOpt.isPresent() && employeeOpt.get().getPassword().equals(password)) {
+                String sessionId = sessionManager.createSession(employeeOpt.get().getId());
+                Cookie sessionCookie = Cookie.make("sessionId", sessionId);
+                sessionCookie.setMaxAge(600);
+                sessionCookie.setHttpOnly(true);
+                sessionCookie.setPath("/");
+                setCookie(exchange, sessionCookie);
+
                 Map<String, Object> data = new HashMap<>();
                 data.put("employee", employeeOpt.get());
                 renderTemplate(exchange, "profile.ftlh", data);
@@ -293,23 +301,36 @@ public class Lesson44Server extends BasicServer {
     }
 
     private void profileGetHandler(HttpExchange exchange) {
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
+        if (employeeOpt.isEmpty()) {
+            try {
+                exchange.getResponseHeaders().set("Location", "/login");
+                exchange.sendResponseHeaders(302, -1);
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         Map<String, Object> data = new HashMap<>();
+        data.put("employee", employeeOpt.get());
         renderTemplate(exchange, "profile.ftlh", data);
     }
 
     private Map<String, String> parseFormData(String formData) {
-        Map<String,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         if (formData == null || formData.isEmpty()) {
             return params;
         }
 
         String[] parts = formData.split("&");
-        for (String part:parts) {
+        for (String part : parts) {
             String[] kv = part.split("=");
             if (kv.length == 2) {
                 try {
-                    String key = URLDecoder.decode(kv[0], "UTF-8");
-                    String value = URLDecoder.decode(kv[1], "UTF-8");
+                    String key = URLDecoder.decode(kv[0], "UTF-8").trim();
+                    String value = URLDecoder.decode(kv[1], "UTF-8").trim();
                     params.put(key, value);
                 } catch (UnsupportedEncodingException e) {
 
@@ -317,5 +338,27 @@ public class Lesson44Server extends BasicServer {
             }
         }
         return params;
+    }
+
+    private Optional<Employee> getAuthenticatedEmployee(HttpExchange exchange) {
+        String cookiesStr = getCookie(exchange);
+        if (cookiesStr == null || cookiesStr.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Map<String, String> cookies = parseFormData(cookiesStr.replace(";", "&"));
+
+        String sessionId = cookies.get("sessionId");
+
+        if (sessionId == null || sessionId.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Integer employeeId = sessionManager.getEmployeeId(sessionId);
+        if (employeeId == null) {
+            return Optional.empty();
+        }
+
+        return dataManager.getEmployeeById(employeeId);
     }
 }
