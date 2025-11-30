@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class BasicServer {
@@ -160,6 +161,15 @@ public abstract class BasicServer {
         }
 
         route.handle(exchange);
+    }
+
+    protected static void setCookie(HttpExchange exchange, Cookie cookie) {
+        exchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
+    }
+
+    protected static String getCookie(HttpExchange exchange) {
+        return exchange.getResponseHeaders().getOrDefault("Cookie", List.of(""))
+                .getFirst();
     }
 
     public final void start() {
