@@ -6,6 +6,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import kg.attractor.java.lesson44.manager.DataManager;
+import kg.attractor.java.lesson44.manager.SessionManager;
 import kg.attractor.java.lesson44.models.Book;
 import kg.attractor.java.lesson44.models.Employee;
 import kg.attractor.java.lesson44.models.EmployeeRecord;
@@ -26,8 +27,8 @@ import java.util.Optional;
 
 public class Lesson44Server extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
-
     private final DataManager dataManager = new DataManager();
+    private final SessionManager sessionManager = SessionManager.getInstance();
 
     public Lesson44Server(String host, int port) throws IOException {
         super(host, port);
