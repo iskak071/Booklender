@@ -44,6 +44,34 @@
       "title": "Мастер и Маргарита",
       "author": "М. Булгаков",
       "image": "/images/master_margarita.jpg",
+      "currentHolder": "test1"
+    },
+    {
+      "id": 103,
+      "title": "Test Book1",
+      "author": "...",
+      "image": "/images/master_margarita.jpg",
+      "currentHolder": "Available"
+    },
+    {
+      "id": 104,
+      "title": "Test Book2",
+      "author": "...",
+      "image": "/images/master_margarita.jpg",
+      "currentHolder": "Available"
+    },
+    {
+      "id": 105,
+      "title": "Test Book3",
+      "author": "...",
+      "image": "/images/master_margarita.jpg",
+      "currentHolder": "Available"
+    },
+    {
+      "id": 105,
+      "title": "Test Book4",
+      "author": "...",
+      "image": "/images/master_margarita.jpg",
       "currentHolder": "Available"
     }
   ],
@@ -58,6 +86,22 @@
       "employeeId": 2,
       "issueDate": 1730000000,
       "returnDate": 1731000000
+    },
+    {
+      "bookId": 102,
+      "employeeId": 3,
+      "issueDate": 1764522001083
+    },
+    {
+      "bookId": 103,
+      "employeeId": 5,
+      "issueDate": 1764522019502,
+      "returnDate": 1764522031953
+    },
+    {
+      "bookId": 103,
+      "employeeId": 5,
+      "issueDate": 1764522033604
     }
   ]
 }

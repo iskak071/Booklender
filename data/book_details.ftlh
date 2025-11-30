@@ -28,14 +28,13 @@
             <#if book.currentHolder == "Available">
             <div class="card p-3 shadow-sm bg-light mb-4">
                 <h2 class="h5 mb-3">Текущий Статус и Действия</h2>
-
                 <p><span class="badge bg-success fs-6 p-3">Доступна</span></p>
-            </div> 
 
-            <div class="card p-3 shadow-sm bg-light">
-                <h5 class="card-title">Управление</h5>
-                <p class="mb-0 text-secondary fst-italic">Функционал управления книгой находится в разработке.</p>
-                <button type="button" class="btn btn-secondary mt-2" disabled>Coming soon..</button>
+                <div class="mt-3">
+                    <form action="/borrow/${book.id}" method="post">
+                        <button type="submit" class="btn btn-success btn-lg w-100">Взять книгу</button>
+                    </form>
+                </div>
             </div>
 
             <#else>
@@ -43,20 +42,19 @@
                 <h2 class="h5 mb-3">Текущий Статус и Действия</h2>
                 <p>
                     <span class="badge bg-danger fs-6 p-3">
-                        Выдана:
-                        <a href="/employee/1" class="text-white">${book.currentHolder}</a>
+                        Выдана: ${book.currentHolder}
                     </span>
                 </p>
-            </div>
 
-            <div class="card p-3 shadow-sm bg-light">
-                <h5 class="card-title">Управление</h5>
-                <p class="mb-0 text-secondary fst-italic">Функционал возврата книги находится в разработке.</p>
-                <button type="button" class="btn btn-secondary mt-2" disabled>Вернуть книгу</button>
+                <div class="mt-3">
+                    <form action="/return/${book.id}" method="post">
+                        <button type="submit" class="btn btn-warning btn-lg w-100">Вернуть книгу</button>
+                    </form>
+                </div>
             </div>
-            </#if>
-        </div>
+        </#if>
     </div>
+</div>
 </div>
 </body>
 </html>
