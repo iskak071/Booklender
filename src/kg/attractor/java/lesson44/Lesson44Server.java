@@ -21,10 +21,8 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Lesson44Server extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
@@ -48,6 +46,8 @@ public class Lesson44Server extends BasicServer {
 
         registerPost("/borrow/\\d+", this::borrowBookHandler);
         registerPost("/return/\\d+", this::returnBookHandler);
+
+        registerGet("/logout", this::logoutHandler);
     }
 
     private static Configuration initFreeMarker() {
@@ -88,7 +88,16 @@ public class Lesson44Server extends BasicServer {
         }
     }
 
-    private void bookListHandler(HttpExchange exchange) {
+    private void bookListHandler(HttpExchange exchange) throws IOException {
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
         List<Book> books = dataManager.getAllBooks();
 
         for (Book book : books) {
@@ -98,10 +107,21 @@ public class Lesson44Server extends BasicServer {
         Map<String, Object> data = new HashMap<>();
         data.put("books", books);
 
+        if (employeeOpt.isPresent()) {
+            data.put("employee", employeeOpt.get());
+        }
+
         renderTemplate(exchange, "book_list.ftlh", data);
     }
 
-    private void bookDetailsHandler(HttpExchange exchange) {
+    private void bookDetailsHandler(HttpExchange exchange) throws IOException {
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
         try {
             String path = exchange.getRequestURI().getPath();
             int bookId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
@@ -135,7 +155,14 @@ public class Lesson44Server extends BasicServer {
 
     }
 
-    private void employeeDetailsHandler(HttpExchange exchange) {
+    private void employeeDetailsHandler(HttpExchange exchange) throws IOException {
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
         String path = exchange.getRequestURI().getPath();
         int employeeId;
         try {
@@ -287,9 +314,8 @@ public class Lesson44Server extends BasicServer {
                 sessionCookie.setPath("/");
                 setCookie(exchange, sessionCookie);
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("employee", employeeOpt.get());
-                renderTemplate(exchange, "profile.ftlh", data);
+                exchange.getResponseHeaders().set("Location", "/profile");
+                exchange.sendResponseHeaders(302, -1);
             } else {
                 sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization failed. Invalid email or password.");
             }
@@ -300,21 +326,31 @@ public class Lesson44Server extends BasicServer {
         }
     }
 
-    private void profileGetHandler(HttpExchange exchange) {
-        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+    private void profileGetHandler(HttpExchange exchange) throws IOException {
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-        if (employeeOpt.isEmpty()) {
-            try {
-                exchange.getResponseHeaders().set("Location", "/login");
-                exchange.sendResponseHeaders(302, -1);
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+        Employee employee = employeeOpt.get();
+
+        List<IssueRecord> currentIssueRecords = dataManager.getRecordsForEmployee(employee.getId()).stream().filter(IssueRecord::isCurrentlyBorrowed).collect(Collectors.toList());
+
+        List<EmployeeRecord> currentBooks = new ArrayList<>();
+        for (IssueRecord record : currentIssueRecords) {
+            Book book = dataManager.getBookById(record.getBookId()).orElse(null);
+            if (book != null) {
+                currentBooks.add(new EmployeeRecord(book, record));
             }
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("employee", employeeOpt.get());
+        data.put("employee", employee);
+        data.put("currentBooks", currentBooks);
+
         renderTemplate(exchange, "profile.ftlh", data);
     }
 
@@ -363,12 +399,14 @@ public class Lesson44Server extends BasicServer {
     }
 
     private void borrowBookHandler(HttpExchange exchange) throws IOException {
-        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
-
-        if (employeeOpt.isEmpty()) {
-            sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization required.");
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
             return;
         }
+
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
 
         try {
             String path = exchange.getRequestURI().getPath();
@@ -390,12 +428,14 @@ public class Lesson44Server extends BasicServer {
     }
 
     private void returnBookHandler(HttpExchange exchange) {
-        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
-
-        if (employeeOpt.isEmpty()) {
-            sendTextData(exchange, ResponseCodes.BAD_REQUEST, ContentType.TEXT_PLAIN, "Authorization required.");
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
             return;
         }
+
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
 
         try {
             String path = exchange.getRequestURI().getPath();
@@ -413,6 +453,42 @@ public class Lesson44Server extends BasicServer {
         } catch (Exception e) {
             e.printStackTrace();
             sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
+    }
+
+    private void logoutHandler(HttpExchange exchange) {
+        try {
+            String cookieStr = getCookie(exchange);
+            if (cookieStr != null && !cookieStr.isEmpty()) {
+                Map<String, String> cookies = parseFormData(cookieStr.replace(";", "&"));
+                String sessionId = cookies.get("sessionId");
+
+                if (sessionId != null) {
+                    sessionManager.removeSession(sessionId);
+                }
+            }
+
+            Cookie sessionCookie = Cookie.make("sessionId", "");
+            sessionCookie.setMaxAge(0);
+            sessionCookie.setHttpOnly(true);
+            sessionCookie.setPath("/");
+            setCookie(exchange, sessionCookie);
+
+            exchange.getResponseHeaders().set("Location", "/login");
+            exchange.sendResponseHeaders(302, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendTextData(exchange, ResponseCodes.INTERNAL_ERROR, ContentType.TEXT_PLAIN, "Internal server error.");
+        }
+    }
+
+    private void requireAuth(HttpExchange exchange) throws IOException {
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
+        if (employeeOpt.isEmpty()) {
+            exchange.getResponseHeaders().set("Location", "/login");
+            exchange.sendResponseHeaders(302, -1);
+            throw new IOException("Unauthorized, redirecting to login.");
         }
     }
 }

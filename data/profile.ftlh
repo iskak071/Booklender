@@ -17,8 +17,32 @@
                 <p><strong>Имя:</strong> ${employee.fullName}</p>
                 <p><strong>Email:</strong> ${employee.email}</p>
                 <p><strong>ID:</strong> ${employee.id}</p>
+
+                <#if currentBooks?? && currentBooks?size gt 0>
+                    <div class="mt-4">
+                        <h5>Ваши текущие книги:</h5>
+                        <div class="list-group">
+                            <#list currentBooks as record>
+                                <div class="list-group-item my-3 rounded-4 shadow-lg">
+                                    <strong>${record.book.title}</strong><br>
+                                    <small>Автор: ${record.book.author}</small><br>
+                                    <small>Взята: ${record.issueDate?number_to_datetime?string("dd.MM.yyyy")}</small><br>
+                                    <form action="/return/${record.book.id}" method="post" class="mt-2">
+                                        <button type="submit" class="btn btn-sm btn-warning">Вернуть</button>
+                                    </form>
+                                </div>
+                            </#list>
+                        </div>
+                    </div>
+                <#else>
+                    <div class="mt-3">
+                        <p>У вас нет взятых книг.</p>
+                    </div>
+                </#if>
+
                 <br>
-                <a href="/books" class="btn btn-primary">Перейти к книгам</a>
+                <a href="/books" class="btn btn-primary w-100 mb-2">Перейти к книгам</a>
+                <a href="/logout" class="btn btn-outline-danger w-100">Выйти</a>
             <#else>
                 <p><strong>Пользователь не найден!</strong></p>
                 <p>Зарегистрируйтесь или войдите в аккаунт.</p>

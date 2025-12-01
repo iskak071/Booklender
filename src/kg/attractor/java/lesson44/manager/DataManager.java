@@ -54,9 +54,7 @@ public class DataManager {
     }
 
     public Optional<Employee> findEmployeeByEmail(String email) {
-        return data.getEmployees().stream()
-                .filter(e -> e.getEmail() != null && e.getEmail().equalsIgnoreCase(email))
-                .findFirst();
+        return data.getEmployees().stream().filter(e -> e.getEmail() != null && e.getEmail().equalsIgnoreCase(email)).findFirst();
     }
 
     public boolean addEmployee(Employee employee) {
@@ -64,10 +62,7 @@ public class DataManager {
             return false;
         }
 
-        int maxID = data.getEmployees().stream()
-                .mapToInt(Employee::getId)
-                .max()
-                .orElse(0);
+        int maxID = data.getEmployees().stream().mapToInt(Employee::getId).max().orElse(0);
         employee.setId(maxID + 1);
 
         data.getEmployees().add(employee);
@@ -94,23 +89,17 @@ public class DataManager {
     }
 
     public Optional<Employee> findCurrentHolder(Book book) {
-        Optional<IssueRecord> activeRecord = data.getIssueRecords().stream()
-                .filter(r -> r.getBookId() == book.getId() && r.isCurrentlyBorrowed())
-                .findFirst();
+        Optional<IssueRecord> activeRecord = data.getIssueRecords().stream().filter(r -> r.getBookId() == book.getId() && r.isCurrentlyBorrowed()).findFirst();
 
         return activeRecord.flatMap(record -> getEmployeeById(record.getEmployeeId()));
     }
 
     public List<IssueRecord> getRecordsForEmployee(int employeeId) {
-        return data.getIssueRecords().stream()
-                .filter(r -> r.getEmployeeId() == employeeId)
-                .collect(Collectors.toList());
+        return data.getIssueRecords().stream().filter(r -> r.getEmployeeId() == employeeId).collect(Collectors.toList());
     }
 
     public int getCurrentBooksCount(int employeeId) {
-        return (int) data.getIssueRecords().stream()
-                .filter(r -> r.getEmployeeId() == employeeId && r.isCurrentlyBorrowed())
-                .count();
+        return (int) data.getIssueRecords().stream().filter(r -> r.getEmployeeId() == employeeId && r.isCurrentlyBorrowed()).count();
     }
 
     public boolean borrowBook(int bookId, int employeeId) {
@@ -140,11 +129,7 @@ public class DataManager {
     }
 
     public boolean returnBook(int bookId, int employeeId) {
-        Optional<IssueRecord> activeRecord = data.getIssueRecords().stream()
-                .filter(r -> r.getBookId() == bookId &&
-                        r.getEmployeeId() == employeeId &&
-                        r.isCurrentlyBorrowed())
-                .findFirst();
+        Optional<IssueRecord> activeRecord = data.getIssueRecords().stream().filter(r -> r.getBookId() == bookId && r.getEmployeeId() == employeeId && r.isCurrentlyBorrowed()).findFirst();
 
         if (activeRecord.isEmpty()) {
             return false;

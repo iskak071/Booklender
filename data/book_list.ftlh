@@ -8,6 +8,9 @@
 </head>
 <body>
 <div class="container mt-4">
+    <div class="d-flex justify-content-end mb-4">
+        <a href="/profile" class="btn btn-success">Перейти в профиль</a>
+    </div>
     <h1 class="text-center">Наши книги: </h1>
 
     <div class="row d-flex justify-content-around mt-5">

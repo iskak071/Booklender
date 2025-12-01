@@ -29,6 +29,12 @@
       "fullName": "etste",
       "email": "test3@test.test",
       "password": "test"
+    },
+    {
+      "id": 6,
+      "fullName": "hfhelklv vkfdfkxngf",
+      "email": "qwe@qwe.ru",
+      "password": "1234"
     }
   ],
   "books": [
@@ -51,7 +57,7 @@
       "title": "Test Book1",
       "author": "...",
       "image": "/images/master_margarita.jpg",
-      "currentHolder": "Available"
+      "currentHolder": "etste"
     },
     {
       "id": 104,
@@ -68,7 +74,7 @@
       "currentHolder": "Available"
     },
     {
-      "id": 105,
+      "id": 106,
       "title": "Test Book4",
       "author": "...",
       "image": "/images/master_margarita.jpg",
@@ -90,7 +96,8 @@
     {
       "bookId": 102,
       "employeeId": 3,
-      "issueDate": 1764522001083
+      "issueDate": 1764522001083,
+      "returnDate": 1764622570460
     },
     {
       "bookId": 103,
@@ -102,6 +109,46 @@
       "bookId": 103,
       "employeeId": 5,
       "issueDate": 1764522033604
+    },
+    {
+      "bookId": 104,
+      "employeeId": 3,
+      "issueDate": 1764622568543,
+      "returnDate": 1764625198025
+    },
+    {
+      "bookId": 102,
+      "employeeId": 3,
+      "issueDate": 1764622571994,
+      "returnDate": 1764622894607
+    },
+    {
+      "bookId": 102,
+      "employeeId": 3,
+      "issueDate": 1764622895852,
+      "returnDate": 1764624873852
+    },
+    {
+      "bookId": 105,
+      "employeeId": 3,
+      "issueDate": 1764624876278,
+      "returnDate": 1764625183669
+    },
+    {
+      "bookId": 102,
+      "employeeId": 3,
+      "issueDate": 1764625185637,
+      "returnDate": 1764625465017
+    },
+    {
+      "bookId": 102,
+      "employeeId": 3,
+      "issueDate": 1764625470671
+    },
+    {
+      "bookId": 106,
+      "employeeId": 3,
+      "issueDate": 1764625472609
     }
   ]
 }
