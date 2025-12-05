@@ -41,8 +41,9 @@
                 </#if>
 
                 <br>
-                <a href="/books" class="btn btn-primary w-100 mb-2">Перейти к книгам</a>
-                <a href="/logout" class="btn btn-outline-danger w-100">Выйти</a>
+                <a href="/books" class="btn btn-success w-100 mb-2">Перейти к книгам</a>
+                <a href="/employees" class="btn btn-primary w-100 mb-2">Список сотрудников</a>
+                <a href="/logout" class="btn btn-danger w-100">Выйти</a>
             <#else>
                 <p><strong>Пользователь не найден!</strong></p>
                 <p>Зарегистрируйтесь или войдите в аккаунт.</p>

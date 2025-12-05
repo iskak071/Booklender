@@ -3,38 +3,44 @@
     {
       "id": 1,
       "fullName": "Иванов Иван Иванович",
-      "email": "ivanov@example.com",
-      "password": "12345"
+      "email": "ivanov@test.test",
+      "password": "test"
     },
     {
       "id": 2,
       "fullName": "Петрова Анна Сергеевна",
-      "email": "petrova@example.com",
-      "password": "54321"
+      "email": "petrova@test.test",
+      "password": "test"
     },
     {
       "id": 3,
-      "fullName": "test1",
-      "email": "test@test.test",
+      "fullName": "Токаев Касым-Жомарт Кемелович",
+      "email": "tokaev@test.test",
       "password": "test"
     },
     {
       "id": 4,
-      "fullName": "test2",
-      "email": "test2@test.test",
+      "fullName": "Васильев Григорий Васильевич",
+      "email": "grisha@test.test",
       "password": "test"
     },
     {
       "id": 5,
-      "fullName": "etste",
-      "email": "test3@test.test",
+      "fullName": "Нагиев Дмитрий Владимирович",
+      "email": "dima_nagiev@test.test",
       "password": "test"
     },
     {
       "id": 6,
-      "fullName": "hfhelklv vkfdfkxngf",
-      "email": "qwe@qwe.ru",
-      "password": "1234"
+      "fullName": "Путин Владимир Владимирович",
+      "email": "putin@test.test",
+      "password": "test"
+    },
+    {
+      "id": 7,
+      "fullName": "Жапаров Садыр Нургожоевич",
+      "email": "japarov@test.test",
+      "password": "test"
     }
   ],
   "books": [
@@ -50,35 +56,35 @@
       "title": "Мастер и Маргарита",
       "author": "М. Булгаков",
       "image": "/images/master_margarita.jpg",
-      "currentHolder": "test1"
+      "currentHolder": "Available"
     },
     {
       "id": 103,
-      "title": "Test Book1",
-      "author": "...",
-      "image": "/images/master_margarita.jpg",
-      "currentHolder": "etste"
+      "title": "Гарри Поттер",
+      "author": "Дж. К. Роулинг",
+      "image": "/images/harry_potter.jpg",
+      "currentHolder": "Нагиев Дмитрий Владимирович"
     },
     {
       "id": 104,
-      "title": "Test Book2",
-      "author": "...",
-      "image": "/images/master_margarita.jpg",
+      "title": "Великий Гэтсби",
+      "author": "Ф. С. Фицджеральд",
+      "image": "/images/gatsby.jpg",
       "currentHolder": "Available"
     },
     {
       "id": 105,
-      "title": "Test Book3",
-      "author": "...",
-      "image": "/images/master_margarita.jpg",
-      "currentHolder": "Available"
+      "title": "Властелин колец",
+      "author": "Дж. Р. Р. Толкин",
+      "image": "/images/vlastelin_kolec.jpg",
+      "currentHolder": "Путин Владимир Владимирович"
     },
     {
       "id": 106,
-      "title": "Test Book4",
-      "author": "...",
-      "image": "/images/master_margarita.jpg",
-      "currentHolder": "Available"
+      "title": "1984",
+      "author": "Дж. Оруэлл",
+      "image": "/images/1984.jpg",
+      "currentHolder": "Жапаров Садыр Нургожоевич"
     }
   ],
   "issueRecords": [
@@ -143,12 +149,41 @@
     {
       "bookId": 102,
       "employeeId": 3,
-      "issueDate": 1764625470671
+      "issueDate": 1764625470671,
+      "returnDate": 1764928573630
     },
     {
       "bookId": 106,
       "employeeId": 3,
-      "issueDate": 1764625472609
+      "issueDate": 1764625472609,
+      "returnDate": 1764928576489
+    },
+    {
+      "bookId": 105,
+      "employeeId": 7,
+      "issueDate": 1764816803056,
+      "returnDate": 1764816884889
+    },
+    {
+      "bookId": 104,
+      "employeeId": 7,
+      "issueDate": 1764816805953,
+      "returnDate": 1764816890130
+    },
+    {
+      "bookId": 105,
+      "employeeId": 6,
+      "issueDate": 1764932610387
+    },
+    {
+      "bookId": 106,
+      "employeeId": 7,
+      "issueDate": 1764932637938
+    },
+    {
+      "bookId": 104,
+      "employeeId": 7,
+      "issueDate": 1764933153071
     }
   ]
 }

@@ -8,7 +8,10 @@
 </head>
 <body>
 <div class="container mt-4">
-    <a href="/books" class="btn btn-outline-secondary mb-4">Вернуться к каталогу книг</a>
+    <div class="mb-4">
+        <a href="/books" class="btn btn-secondary">← К книгам</a>
+        <a href="/employees" class="btn btn-info ms-2">Список сотрудников</a>
+    </div>
 
     <h1 class="mb-4">Книга: ${book.title}</h1>
 

@@ -8,9 +8,9 @@
 </head>
 <body>
 <div class="container mt-4">
-    <div class="d-flex justify-content-end mb-4">
-        <a href="/profile" class="btn btn-success me-2">Перейти в профиль</a>
+    <div class="d-flex justify-content-between mb-4">
         <a href="/books" class="btn btn-primary">К книгам</a>
+        <a href="/profile" class="btn btn-success">Перейти в профиль</a>
     </div>
 
     <h1 class="text-center">Наши сотрудники: </h1>
@@ -43,10 +43,10 @@
                             <#else>
                                 <div class="mt-2">
                                     <#list empInfo.currentBooks as bookRecord>
-                                        <div class="badge bg-info mb-1">
-                                            ${bookRecord.book.title}
-                                        </div>
-                                    </#list>
+                                    <div class="badge bg-info mb-1" title="Автор: ${bookRecord.book.author}">
+                                        ${bookRecord.book.title}
+                                    </div>
+                                </#list>
                                 </div>
                             </#if>
                         </div>
