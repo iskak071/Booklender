@@ -48,6 +48,8 @@ public class Lesson44Server extends BasicServer {
         registerPost("/return/\\d+", this::returnBookHandler);
 
         registerGet("/logout", this::logoutHandler);
+
+        registerGet("/employees", this::employeesHandler);
     }
 
     private static Configuration initFreeMarker() {
@@ -490,5 +492,51 @@ public class Lesson44Server extends BasicServer {
             exchange.sendResponseHeaders(302, -1);
             throw new IOException("Unauthorized, redirecting to login.");
         }
+    }
+
+    private void employeesHandler(HttpExchange exchange) {
+        try {
+            requireAuth(exchange);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Optional<Employee> employeeOpt = getAuthenticatedEmployee(exchange);
+
+        List<Employee> allEmployees = dataManager.getAllEmployees();
+        List<Map<String, Object>> employeesWithBookInfo = new ArrayList<>();
+
+        for (Employee employee : allEmployees) {
+            Map<String, Object> employeeInfo = new HashMap<>();
+            employeeInfo.put("employee", employee);
+
+            List<IssueRecord> currentIssueRecords = dataManager.getRecordsForEmployee(employee.getId())
+                    .stream()
+                    .filter(IssueRecord::isCurrentlyBorrowed)
+                    .collect(Collectors.toList());
+
+            List<EmployeeRecord> currentBooks = new ArrayList<>();
+            for (IssueRecord record : currentIssueRecords) {
+                Book book = dataManager.getBookById(record.getBookId()).orElse(null);
+                if (book != null) {
+                    currentBooks.add(new EmployeeRecord(book, record));
+                }
+            }
+
+            employeeInfo.put("currentBooks", currentBooks);
+            employeeInfo.put("bookCount", currentBooks.size());
+
+            employeesWithBookInfo.add(employeeInfo);
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("employeesWithBooks", employeesWithBookInfo);
+
+        if (employeeOpt.isPresent()) {
+            data.put("employee", employeeOpt.get());
+        }
+
+        renderTemplate(exchange, "employees.ftlh", data);
     }
 }
